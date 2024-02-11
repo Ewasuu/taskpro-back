@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TaskPro_back.Enums;
 
 namespace TaskPro_back.Models
 {
