@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>true</InvariantGlobalization>
+    <InvariantGlobalization>false</InvariantGlobalization>
     <RootNamespace>TaskPro_back</RootNamespace>
     <UserSecretsId>68fec27c-cb14-425b-aeba-889d31420d1b</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -12,6 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
