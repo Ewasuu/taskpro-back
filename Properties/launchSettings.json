@@ -34,7 +34,9 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
-        "ASPNETCORE_HTTP_PORTS": "8080"
+        "ASPNETCORE_HTTP_PORTS": "8080",
+        "JWT_KEY": "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456789acedfdasdfsdsad",
+        "SQLServerConnectionString": "Server=host.docker.internal,1433;Database=TaskPro; User Id=SA; Password=P@SSWORD12345; TrustServerCertificate=True"
       },
       "publishAllPorts": true,
       "useSSL": true

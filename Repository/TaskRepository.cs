@@ -26,7 +26,6 @@ namespace TaskPro_back.Repository
                     Title = taskDto.Title,
                     Description = taskDto.Description,
                     IsCompleted = false,
-                    IsDeleted = false,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
                 };
@@ -58,29 +57,39 @@ namespace TaskPro_back.Repository
             }
         }
 
-        public async Task<ResponseDTO<Models.Task>> Update(TaskDTO taskDTO, Guid userId)
+        public async Task<ResponseDTO<Models.Task>> Update(TaskDTO taskDTO, Guid id, Guid userId)
         {
             try
             {
                 using var context = _context;
 
-                Models.Task? task = await context.Tasks.FindAsync(taskDTO);
-
-                if (task != null)
+                if (await _context.UsersInTasks.AnyAsync(d => d.TaskId.Equals(id) && d.UserId.Equals(userId) && (d.Role.Equals(Enums.Roles.WRITE_READ) || d.Role.Equals(Enums.Roles.OWNER)) ))
                 {
-                    task.Title = taskDTO.Title;
-                    task.Description = taskDTO.Description;
-                    task.UpdatedAt = DateTime.Now;
+                    Models.Task? task = await context.Tasks.FindAsync(id);
 
-                    await context.SaveChangesAsync();
+                    if (task != null)
+                    {
+                        task.Title = taskDTO.Title;
+                        task.Description = taskDTO.Description;
+                        task.IsCompleted = taskDTO.IsCompleted;
+                        task.UpdatedAt = DateTime.Now;
 
-                    return new ResponseDTO<Models.Task> {
-                        Data = task,
-                        Succes = true
-                    };
-                }else
+                        await context.SaveChangesAsync();
+
+                        return new ResponseDTO<Models.Task>
+                        {
+                            Data = task,
+                            Succes = true
+                        };
+                    }
+                    else
+                    {
+                        throw new Exception("No se encuentra esta tarea");
+                    }
+                }
+                else
                 {
-                    throw new Exception("No se encuentra esta tarea");
+                    throw new Exception("No tiene permisos para modificar esta tarea");
                 }
             }
             catch (Exception ex)
@@ -101,7 +110,7 @@ namespace TaskPro_back.Repository
             {
                 using var context = _context;
 
-                if (await _context.Tasks.AnyAsync( t => t.id.Equals(id) && !t.IsDeleted))
+                if (await _context.Tasks.AnyAsync( t => t.id.Equals(id)))
                 {
 
                     UserInTask? userInTask = await (from tasks in _context.Tasks.AsNoTracking()
@@ -161,7 +170,7 @@ namespace TaskPro_back.Repository
                 IEnumerable<UserTasksDTO> taskList = await (from tasks in _context.Tasks.AsNoTracking()
                                                      join user_in_task in _context.UsersInTasks.AsNoTracking()
                                                      on tasks.id equals user_in_task.TaskId
-                                                     where user_in_task.UserId.Equals(userId) && !tasks.IsDeleted 
+                                                     where user_in_task.UserId.Equals(userId)
                                                      select new UserTasksDTO
                                                      {
                                                          id = tasks.id,
@@ -169,7 +178,6 @@ namespace TaskPro_back.Repository
                                                          Role = user_in_task.Role,
                                                          Title = tasks.Title,
                                                          Description = tasks.Description,
-                                                         IsDeleted = tasks.IsDeleted,
                                                          CreatedAt = tasks.CreatedAt,
                                                          UpdatedAt = tasks.UpdatedAt,
                                                      }).ToListAsync();
@@ -228,12 +236,54 @@ namespace TaskPro_back.Repository
             }
         }
 
-        public Task<ResponseDTO<bool>> InviteUser(Guid taskId, Guid userId)
+        public async Task<ResponseDTO<bool>> AddUser(AddUserInTaskDTO addUserInTaskDTO, Guid taskId, Guid ownerId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using var context = _context;
+
+                if (await context.UsersInTasks.AnyAsync(d => d.TaskId.Equals(taskId) && d.UserId.Equals(ownerId) && d.Role.Equals(Enums.Roles.OWNER)))
+                {
+                    if (!await context.UsersInTasks.AnyAsync(d => d.TaskId.Equals(taskId) && d.UserId.Equals(addUserInTaskDTO.UserId)))
+                    {
+                        UserInTask userInTask = new UserInTask
+                        {
+                            TaskId = taskId,
+                            UserId = addUserInTaskDTO.UserId,
+                            Role = addUserInTaskDTO.Role,
+                        };
+
+                        await context.AddAsync(userInTask);
+                        await context.SaveChangesAsync();
+
+                        return new ResponseDTO<bool>
+                        {
+                            Data = true,
+                            Succes = true,
+                        };
+                    }
+                    else
+                    {
+                        throw new Exception("Este usuario ya forma parte de esta tarea");
+                    }
+                }
+                else
+                {
+                    throw new Exception("No tienes permisos para invitar a un usuario");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO<bool> {
+                    Data = true,
+                    Succes = false,
+                    ErrorMesage = ex.Message
+                };
+            }
         }
 
-        public async Task<ResponseDTO<bool>> RevokeUser(Guid taskId, Guid userId, Guid ownerId)
+        public async Task<ResponseDTO<bool>> RemoveUser(AddUserInTaskDTO addUserInTaskDTO, Guid taskId, Guid ownerId)
         {
             try
             {
@@ -242,7 +292,7 @@ namespace TaskPro_back.Repository
                 if (await context.UsersInTasks.AnyAsync( d => d.TaskId.Equals(taskId) && d.UserId.Equals(ownerId) && d.Role.Equals(Enums.Roles.OWNER)))
                 {
 
-                    await context.UsersInTasks.Where( d => d.TaskId.Equals(taskId) && d.UserId.Equals(userId))
+                    await context.UsersInTasks.Where( d => d.TaskId.Equals(taskId) && d.UserId.Equals(addUserInTaskDTO.UserId))
                         .ExecuteDeleteAsync();
 
                     return new ResponseDTO<bool>

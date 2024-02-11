@@ -47,7 +47,15 @@ namespace TaskPro_back.Helpers
             ClaimsPrincipal principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out validatedToken);
             var data = principal.Claims.ToArray()[2];
 
-            return Guid.Parse(data.Value);
+            if (Guid.TryParse(data.Value, out Guid userId))
+            {
+                return userId;
+            }
+            else
+            {
+                return Guid.Empty;
+            }
+
         }
     }
 }
