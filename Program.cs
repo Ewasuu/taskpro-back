@@ -4,15 +4,23 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using TaskPro_back;
 using TaskPro_back.IRepository;
+using TaskPro_back.Models.MongoModels;
 using TaskPro_back.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddSqlServer<TaskProContext>(Environment.GetEnvironmentVariable("SQLServerConnectionString"));
+builder.Services.Configure<CommentDatabaseConfiguration>( config =>
+{
+    config.ConnectionString = Environment.GetEnvironmentVariable("MongoConnectionString");
+    config.DatabaseName = Environment.GetEnvironmentVariable("Database");
+    config.CommentCollectionName = Environment.GetEnvironmentVariable("CommentCollectionName");
+});
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -36,7 +36,10 @@
         "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080",
         "JWT_KEY": "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456789acedfdasdfsdsad",
-        "SQLServerConnectionString": "Server=host.docker.internal,1433;Database=TaskPro; User Id=SA; Password=P@SSWORD12345; TrustServerCertificate=True"
+        "SQLServerConnectionString": "Server=host.docker.internal,1433;Database=TaskPro; User Id=SA; Password=P@SSWORD12345; TrustServerCertificate=True",
+        "MongoConnectionString": "mongodb://host.docker.internal:27017",
+        "Database": "TaskPro",
+        "CommentCollectionName": "Comments"
       },
       "publishAllPorts": true,
       "useSSL": true
