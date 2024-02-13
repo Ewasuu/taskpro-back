@@ -41,9 +41,6 @@ namespace TaskPro_back.Controllers
         {
             Guid tokenId = JWTHelper.ValidateToken(HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1] ?? "");
 
-            if (!tokenId.Equals(id))
-                return Unauthorized();
-
             ResponseDTO<UserDTO> response = await _repository.Me(tokenId);
 
             if (response.Success)
