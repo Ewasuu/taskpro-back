@@ -20,6 +20,43 @@ namespace TaskPro_back.Repository
             _context = context;
         }
 
+        public async Task<ResponseDTO<UserDTO>> Me(Guid id)
+        {
+            try
+            {
+                using var context = _context;
+
+                User? user = await _context.Users.FindAsync(id);
+
+                if (user != null)
+                {
+                    return new ResponseDTO<UserDTO>
+                    {
+                        Data = new UserDTO
+                        {
+                            Email = user.Email,
+                            Id = user.id,
+                            Name = user.UserName,
+                        },
+                        Success = true,
+                    };
+                }
+                else
+                {
+                    throw new Exception("Usuario no econtrado");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO<UserDTO>
+                {
+                    Data = null,
+                    Success = false,
+                    ErrorMesage = ex.Message
+                };
+            }
+        }
+
 
         public async Task<ResponseDTO<UserDTO>> Create(RegisterDTO registerDTO)
         {
@@ -52,9 +89,10 @@ namespace TaskPro_back.Repository
                     Name = user.UserName
                 };
 
-                return new ResponseDTO<UserDTO> {
+                return new ResponseDTO<UserDTO>
+                {
                     Data = userDTO,
-                    Succes = true
+                    Success = true
                 };
             }
             catch (Exception ex)
@@ -62,7 +100,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<UserDTO>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -76,7 +114,7 @@ namespace TaskPro_back.Repository
                     .Where(u => u.Email.Equals(loginDTO.Email))
                     .FirstOrDefaultAsync();
 
-                if(user != null)
+                if (user != null)
                 {
                     bool isVerified = BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password);
 
@@ -84,8 +122,8 @@ namespace TaskPro_back.Repository
                     {
                         return new LoginResponseDTO<UserDTO>
                         {
-                            Data = new UserDTO { Email = user.Email, Id = user.id, Name = user.UserName},
-                            Succes = true,
+                            Data = new UserDTO { Email = user.Email, Id = user.id, Name = user.UserName },
+                            Success = true,
                             Token = JWTHelper.GenerateJwtToken(user)
                         };
                     }
@@ -105,7 +143,7 @@ namespace TaskPro_back.Repository
                 return new LoginResponseDTO<UserDTO>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -119,8 +157,8 @@ namespace TaskPro_back.Repository
                 User? user = await context.Users.FindAsync(id) ?? null;
 
                 if (user != null)
-                { 
-                    context.Users.Remove(user); 
+                {
+                    context.Users.Remove(user);
                     await context.SaveChangesAsync();
                 }
                 else
@@ -132,7 +170,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<bool>
                 {
                     Data = true,
-                    Succes = true
+                    Success = true
                 };
 
             }
@@ -142,7 +180,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<bool>
                 {
                     Data = false,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -166,7 +204,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<IEnumerable<UserDTO>>
                 {
                     Data = users,
-                    Succes = true
+                    Success = true
                 };
             }
             catch (Exception ex)
@@ -175,7 +213,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<IEnumerable<UserDTO>>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -187,10 +225,11 @@ namespace TaskPro_back.Repository
             {
                 using var context = _context;
 
-                User? user = await context.Users.Where( u => u.id.Equals(id))
+                User? user = await context.Users.Where(u => u.id.Equals(id))
                     .FirstOrDefaultAsync();
 
-                if (user != null) {
+                if (user != null)
+                {
                     user.UserName = userDTO.Name;
 
                     await context.SaveChangesAsync();
@@ -198,7 +237,7 @@ namespace TaskPro_back.Repository
                     return new ResponseDTO<UserDTO>
                     {
                         Data = userDTO,
-                        Succes = true,
+                        Success = true,
                     };
                 }
                 else
@@ -212,7 +251,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<UserDTO>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             };

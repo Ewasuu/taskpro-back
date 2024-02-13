@@ -21,7 +21,7 @@ namespace TaskPro_back.Controllers
         {
             ResponseDTO<Comment> response = await _repository.Create(comment);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else 
                 return BadRequest(response);

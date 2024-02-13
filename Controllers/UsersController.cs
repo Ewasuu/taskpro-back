@@ -15,7 +15,8 @@ namespace TaskPro_back.Controllers
     {
 
         private readonly IUserRepository _repository;
-        public UsersController(IUserRepository repository) {
+        public UsersController(IUserRepository repository)
+        {
             _repository = repository;
         }
 
@@ -24,15 +25,31 @@ namespace TaskPro_back.Controllers
         {
             Guid tokenId = JWTHelper.ValidateToken(HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1] ?? "");
 
-            if(!tokenId.Equals(id))
+            if (!tokenId.Equals(id))
                 return Unauthorized();
 
             ResponseDTO<UserDTO> response = await _repository.Update(user, id);
 
-            if(response.Succes)
+            if (response.Success)
                 return Ok(response);
-            else 
+            else
                 return NotFound(response);
+        }
+
+        [HttpGet("/me")]
+        public async Task<IActionResult> Me()
+        {
+            Guid tokenId = JWTHelper.ValidateToken(HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1] ?? "");
+
+            if (!tokenId.Equals(id))
+                return Unauthorized();
+
+            ResponseDTO<UserDTO> response = await _repository.Me(tokenId);
+
+            if (response.Success)
+                return Ok(response);
+            else
+                return BadRequest(response);
         }
 
         [HttpGet("search/{key}")]
@@ -40,7 +57,7 @@ namespace TaskPro_back.Controllers
         {
             ResponseDTO<IEnumerable<UserDTO>> response = await _repository.Get(key);
 
-            if(response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
@@ -57,7 +74,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<bool> response = await _repository.Delete(id);
 
-            if(response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);

@@ -20,7 +20,7 @@ namespace TaskPro_back.Controllers
 
             LoginResponseDTO<UserDTO> response = await _repository.Login(user);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
@@ -32,7 +32,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<UserDTO> response = await _repository.Create(user);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);

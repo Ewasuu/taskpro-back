@@ -22,6 +22,18 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
+const string _MyCors = "MyCors";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: _MyCors, builder =>
+    {
+        //builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+            .AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -68,12 +80,11 @@ builder.Services.AddSwaggerGen(opt =>
 
 var app = builder.Build();
 
+app.UseCors(_MyCors);
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

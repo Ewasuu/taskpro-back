@@ -27,7 +27,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<IEnumerable<UserTasksDTO>> response = await _repository.Get(filter, userId);
 
-            if(response.Succes)
+            if(response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
@@ -42,7 +42,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<Models.Task> response = await _repository.GetByID(id, userId);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
@@ -55,7 +55,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<Models.Task> response = await _repository.Create(task, userId);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
@@ -68,7 +68,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<Models.Task> response = await _repository.Update(task, id, userId);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
@@ -81,7 +81,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<Models.Task> response = await _repository.Delete(id, userId);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
@@ -94,7 +94,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<bool> response = await _repository.AddUser(addUserInTaskDTO, id, ownerId);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
@@ -107,7 +107,7 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<bool> response = await _repository.RemoveUser(addUserInTaskDTO, id, ownerId);
 
-            if (response.Succes)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);

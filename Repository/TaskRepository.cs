@@ -42,7 +42,7 @@ namespace TaskPro_back.Repository
 
                 return new ResponseDTO<Models.Task> {
                     Data = task,
-                    Succes = true
+                    Success = true
                 };
             }
             catch (Exception ex)
@@ -51,7 +51,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<Models.Task>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -79,7 +79,7 @@ namespace TaskPro_back.Repository
                         return new ResponseDTO<Models.Task>
                         {
                             Data = task,
-                            Succes = true
+                            Success = true
                         };
                     }
                     else
@@ -98,7 +98,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<Models.Task>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -129,7 +129,7 @@ namespace TaskPro_back.Repository
                             return new ResponseDTO<Models.Task>
                             {
                                 Data = null,
-                                Succes = true
+                                Success = true
                             };
 
                         }
@@ -155,7 +155,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<Models.Task>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -189,7 +189,7 @@ namespace TaskPro_back.Repository
 
                 return new ResponseDTO<IEnumerable<UserTasksDTO>>() { 
                     Data = taskList,
-                    Succes = true,
+                    Success = true,
                 };
             }
             catch (Exception ex)
@@ -197,7 +197,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<IEnumerable<UserTasksDTO>>()
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -216,7 +216,7 @@ namespace TaskPro_back.Repository
                     return new ResponseDTO<Models.Task>
                     {
                         Data = task,
-                        Succes = true
+                        Success = true
                     };
                 }
                 else
@@ -230,7 +230,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<Models.Task>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -259,7 +259,7 @@ namespace TaskPro_back.Repository
                         return new ResponseDTO<bool>
                         {
                             Data = true,
-                            Succes = true,
+                            Success = true,
                         };
                     }
                     else
@@ -277,7 +277,7 @@ namespace TaskPro_back.Repository
             {
                 return new ResponseDTO<bool> {
                     Data = true,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
@@ -298,7 +298,7 @@ namespace TaskPro_back.Repository
                     return new ResponseDTO<bool>
                     {
                         Data = true,
-                        Succes = true
+                        Success = true
                     };
                 }
                 else
@@ -312,7 +312,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<bool>
                 {
                     Data = false,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }

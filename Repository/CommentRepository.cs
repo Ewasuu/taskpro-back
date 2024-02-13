@@ -9,9 +9,10 @@ namespace TaskPro_back.Repository
     public class CommentRepository : ICommentRepository
     {
 
-        private readonly IMongoCollection<Comment> _commentsCollection; 
+        private readonly IMongoCollection<Comment> _commentsCollection;
 
-        public CommentRepository(IOptions<CommentDatabaseConfiguration> commentConfiguration) {
+        public CommentRepository(IOptions<CommentDatabaseConfiguration> commentConfiguration)
+        {
             var mongoClient = new MongoClient(commentConfiguration.Value.ConnectionString);
 
             var taskPro = mongoClient.GetDatabase(commentConfiguration.Value.DatabaseName);
@@ -29,7 +30,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<Comment>
                 {
                     Data = comment,
-                    Succes = true,
+                    Success = true,
                 };
             }
             catch (Exception ex)
@@ -37,7 +38,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<Comment>
                 {
                     Data = null,
-                    Succes = false,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
