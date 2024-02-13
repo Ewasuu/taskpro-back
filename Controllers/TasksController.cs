@@ -21,12 +21,12 @@ namespace TaskPro_back.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(string filter = "all")
+        public async Task<IActionResult> Get()
         {
             Guid userId = JWTHelper.ValidateToken(HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1] ?? "");
 
 
-            ResponseDTO<IEnumerable<UserTasksDTO>> response = await _repository.Get(filter, userId);
+            ResponseDTO<IEnumerable<UserTasksDTO>> response = await _repository.Get(userId);
 
             if (response.Success)
                 return Ok(response);

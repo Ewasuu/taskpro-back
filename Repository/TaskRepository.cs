@@ -166,7 +166,7 @@ namespace TaskPro_back.Repository
             }
         }
 
-        public async Task<ResponseDTO<IEnumerable<UserTasksDTO>>> Get(string filter, Guid userId)
+        public async Task<ResponseDTO<IEnumerable<UserTasksDTO>>> Get(Guid userId)
         {
             try
             {
@@ -187,10 +187,6 @@ namespace TaskPro_back.Repository
                                                                 UpdatedAt = tasks.UpdatedAt,
                                                             }).ToListAsync();
 
-                if (filter.Equals("mine"))
-                {
-                    taskList = taskList.Where(t => t.Role.Equals(Enums.Roles.OWNER));
-                }
 
                 return new ResponseDTO<IEnumerable<UserTasksDTO>>()
                 {

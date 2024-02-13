@@ -5,7 +5,7 @@ namespace TaskPro_back.IRepository
 {
     public interface ITaskRepository
     {
-        public Task<ResponseDTO<IEnumerable<UserTasksDTO>>> Get(string filter, Guid userId);
+        public Task<ResponseDTO<IEnumerable<UserTasksDTO>>> Get(Guid userId);
         public Task<ResponseDTO<TaskDetailDTO>> GetByID(Guid id, Guid userID);
         public Task<ResponseDTO<Models.Task>> Create(TaskDTO taskDTO, Guid userId);
         public Task<ResponseDTO<Models.Task>> Update(TaskDTO taskDTO, Guid id, Guid userId);
