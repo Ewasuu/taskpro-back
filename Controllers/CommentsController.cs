@@ -12,7 +12,8 @@ namespace TaskPro_back.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly ICommentRepository _repository;
-        public CommentsController(ICommentRepository repository) {
+        public CommentsController(ICommentRepository repository)
+        {
             _repository = repository;
         }
 
@@ -23,9 +24,20 @@ namespace TaskPro_back.Controllers
 
             if (response.Success)
                 return Ok(response);
-            else 
+            else
                 return BadRequest(response);
 
+        }
+
+        [HttpGet("{taskId}")]
+        public async Task<IActionResult> Get(Guid taskId)
+        {
+            ResponseDTO<IEnumerable<Comment>> response = await _repository.Get(taskId);
+
+            if (response.Success)
+                return Ok(response);
+            else
+                return BadRequest(response);
         }
     }
 }

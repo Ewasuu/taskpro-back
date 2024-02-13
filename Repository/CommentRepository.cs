@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using TaskPro_back.Entities;
 using TaskPro_back.IRepository;
@@ -49,9 +50,29 @@ namespace TaskPro_back.Repository
             throw new NotImplementedException();
         }
 
-        public Task<ResponseDTO<IEnumerable<Comment>>> Get(Guid taskId)
+        public async Task<ResponseDTO<IEnumerable<Comment>>> Get(Guid taskId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var commentList = await _commentsCollection.AsQueryable().Where(c => c.TaskId.Equals(taskId)).ToListAsync();
+
+                return new ResponseDTO<IEnumerable<Comment>>
+                {
+                    Data = commentList,
+                    Success = true,
+
+                };
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDTO<IEnumerable<Comment>>
+                {
+                    Data = null,
+                    Success = true,
+                    ErrorMesage = ex.Message
+                };
+            }
         }
 
         public Task<ResponseDTO<Comment>> Update(Guid id)
