@@ -55,7 +55,9 @@ namespace TaskPro_back.Repository
         {
             try
             {
-                var commentList = await _commentsCollection.Find(filter => filter.TaskId.Equals(taskId)).ToListAsync();
+
+                IEnumerable<Comment> commentList = await _commentsCollection.Find(Builders<Comment>.Filter.Empty).ToListAsync();
+                commentList = commentList.Where(x => x.TaskId.Equals(taskId)).ToList();
 
                 return new ResponseDTO<IEnumerable<Comment>>
                 {
