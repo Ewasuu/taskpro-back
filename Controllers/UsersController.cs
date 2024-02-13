@@ -52,7 +52,9 @@ namespace TaskPro_back.Controllers
         [HttpGet("search/{key}")]
         public async Task<IActionResult> Search(string key)
         {
-            ResponseDTO<IEnumerable<UserDTO>> response = await _repository.Get(key);
+            Guid tokenId = JWTHelper.ValidateToken(HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1] ?? "");
+
+            ResponseDTO<IEnumerable<UserDTO>> response = await _repository.Get(key, tokenId);
 
             if (response.Success)
                 return Ok(response);

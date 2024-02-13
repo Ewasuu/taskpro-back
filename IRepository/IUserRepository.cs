@@ -8,7 +8,7 @@ namespace TaskPro_back.IRepository
     {
         public Task<LoginResponseDTO<UserDTO>> Login(LoginDTO registerDTO);
         public Task<ResponseDTO<UserDTO>> Create(RegisterDTO registerDTO);
-        public Task<ResponseDTO<IEnumerable<UserDTO>>> Get(string key);
+        public Task<ResponseDTO<IEnumerable<UserDTO>>> Get(string key, Guid userId);
         public Task<ResponseDTO<UserDTO>> Me(Guid id);
         public Task<ResponseDTO<UserDTO>> Update(UserDTO userDTO, Guid id);
         public Task<ResponseDTO<bool>> Delete(Guid id);

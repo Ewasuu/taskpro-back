@@ -186,14 +186,14 @@ namespace TaskPro_back.Repository
             }
         }
 
-        public async Task<ResponseDTO<IEnumerable<UserDTO>>> Get(string key)
+        public async Task<ResponseDTO<IEnumerable<UserDTO>>> Get(string key, Guid userId)
         {
             try
             {
                 using var context = _context;
 
                 IEnumerable<UserDTO> users = await (from user in context.Users.AsNoTracking()
-                                                    where user.UserName.Contains(key) || user.Email.Contains(key)
+                                                    where user.UserName.Contains(key) || user.Email.Contains(key) && user.id != userId
                                                     select new UserDTO
                                                     {
                                                         Email = user.Email,
