@@ -26,6 +26,7 @@ namespace TaskPro_back.Repository
         {
             try
             {
+                comment.Id = Guid.NewGuid();
                 await _commentsCollection.InsertOneAsync(comment);
 
                 return new ResponseDTO<Comment>
@@ -54,7 +55,7 @@ namespace TaskPro_back.Repository
         {
             try
             {
-                var commentList = await _commentsCollection.AsQueryable().Where(c => c.TaskId.Equals(taskId)).ToListAsync();
+                var commentList = await _commentsCollection.Find(filter => filter.TaskId.Equals(taskId)).ToListAsync();
 
                 return new ResponseDTO<IEnumerable<Comment>>
                 {
@@ -69,7 +70,7 @@ namespace TaskPro_back.Repository
                 return new ResponseDTO<IEnumerable<Comment>>
                 {
                     Data = null,
-                    Success = true,
+                    Success = false,
                     ErrorMesage = ex.Message
                 };
             }
