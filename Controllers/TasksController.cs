@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskPro_back.Entities;
 using TaskPro_back.Helpers;
 using TaskPro_back.IRepository;
+using TaskPro_back.Models;
 
 namespace TaskPro_back.Controllers
 {
@@ -27,11 +28,11 @@ namespace TaskPro_back.Controllers
 
             ResponseDTO<IEnumerable<UserTasksDTO>> response = await _repository.Get(filter, userId);
 
-            if(response.Success)
+            if (response.Success)
                 return Ok(response);
             else
                 return BadRequest(response);
-            
+
         }
 
 
@@ -40,7 +41,7 @@ namespace TaskPro_back.Controllers
         {
             Guid userId = JWTHelper.ValidateToken(HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1] ?? "");
 
-            ResponseDTO<Models.Task> response = await _repository.GetByID(id, userId);
+            ResponseDTO<TaskDetailDTO> response = await _repository.GetByID(id, userId);
 
             if (response.Success)
                 return Ok(response);

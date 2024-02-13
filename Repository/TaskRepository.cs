@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using TaskPro_back.Entities;
@@ -11,7 +12,8 @@ namespace TaskPro_back.Repository
     {
 
         private readonly TaskProContext _context;
-        public TaskRepository(TaskProContext context) { 
+        public TaskRepository(TaskProContext context)
+        {
             _context = context;
         }
 
@@ -21,7 +23,8 @@ namespace TaskPro_back.Repository
             {
                 using var context = _context;
 
-                Models.Task task = new Models.Task { 
+                Models.Task task = new Models.Task
+                {
                     id = Guid.NewGuid(),
                     Title = taskDto.Title,
                     Description = taskDto.Description,
@@ -30,7 +33,8 @@ namespace TaskPro_back.Repository
                     UpdatedAt = DateTime.Now,
                 };
 
-                UserInTask userInTask = new UserInTask { 
+                UserInTask userInTask = new UserInTask
+                {
                     Role = Enums.Roles.OWNER,
                     TaskId = task.id,
                     UserId = userId,
@@ -40,7 +44,8 @@ namespace TaskPro_back.Repository
                 await context.UsersInTasks.AddAsync(userInTask);
                 await context.SaveChangesAsync();
 
-                return new ResponseDTO<Models.Task> {
+                return new ResponseDTO<Models.Task>
+                {
                     Data = task,
                     Success = true
                 };
@@ -63,7 +68,7 @@ namespace TaskPro_back.Repository
             {
                 using var context = _context;
 
-                if (await _context.UsersInTasks.AnyAsync(d => d.TaskId.Equals(id) && d.UserId.Equals(userId) && (d.Role.Equals(Enums.Roles.WRITE_READ) || d.Role.Equals(Enums.Roles.OWNER)) ))
+                if (await _context.UsersInTasks.AnyAsync(d => d.TaskId.Equals(id) && d.UserId.Equals(userId) && (d.Role.Equals(Enums.Roles.WRITE_READ) || d.Role.Equals(Enums.Roles.OWNER))))
                 {
                     Models.Task? task = await context.Tasks.FindAsync(id);
 
@@ -110,14 +115,14 @@ namespace TaskPro_back.Repository
             {
                 using var context = _context;
 
-                if (await _context.Tasks.AnyAsync( t => t.id.Equals(id)))
+                if (await _context.Tasks.AnyAsync(t => t.id.Equals(id)))
                 {
 
                     UserInTask? userInTask = await (from tasks in _context.Tasks.AsNoTracking()
-                                              join user_in_task in _context.UsersInTasks.AsNoTracking()
-                                              on tasks.id equals user_in_task.TaskId
-                                              where user_in_task.UserId.Equals(userId)
-                                              select user_in_task).FirstOrDefaultAsync();
+                                                    join user_in_task in _context.UsersInTasks.AsNoTracking()
+                                                    on tasks.id equals user_in_task.TaskId
+                                                    where user_in_task.UserId.Equals(userId)
+                                                    select user_in_task).FirstOrDefaultAsync();
 
                     if (userInTask != null)
                     {
@@ -168,26 +173,27 @@ namespace TaskPro_back.Repository
                 using var context = _context;
 
                 IEnumerable<UserTasksDTO> taskList = await (from tasks in _context.Tasks.AsNoTracking()
-                                                     join user_in_task in _context.UsersInTasks.AsNoTracking()
-                                                     on tasks.id equals user_in_task.TaskId
-                                                     where user_in_task.UserId.Equals(userId)
-                                                     select new UserTasksDTO
-                                                     {
-                                                         id = tasks.id,
-                                                         IsCompleted = tasks.IsCompleted,
-                                                         Role = user_in_task.Role,
-                                                         Title = tasks.Title,
-                                                         Description = tasks.Description,
-                                                         CreatedAt = tasks.CreatedAt,
-                                                         UpdatedAt = tasks.UpdatedAt,
-                                                     }).ToListAsync();
+                                                            join user_in_task in _context.UsersInTasks.AsNoTracking()
+                                                            on tasks.id equals user_in_task.TaskId
+                                                            where user_in_task.UserId.Equals(userId)
+                                                            select new UserTasksDTO
+                                                            {
+                                                                id = tasks.id,
+                                                                IsCompleted = tasks.IsCompleted,
+                                                                Role = user_in_task.Role,
+                                                                Title = tasks.Title,
+                                                                Description = tasks.Description,
+                                                                CreatedAt = tasks.CreatedAt,
+                                                                UpdatedAt = tasks.UpdatedAt,
+                                                            }).ToListAsync();
 
                 if (filter.Equals("mine"))
                 {
-                    taskList = taskList.Where( t => t.Role.Equals(Enums.Roles.OWNER));
+                    taskList = taskList.Where(t => t.Role.Equals(Enums.Roles.OWNER));
                 }
 
-                return new ResponseDTO<IEnumerable<UserTasksDTO>>() { 
+                return new ResponseDTO<IEnumerable<UserTasksDTO>>()
+                {
                     Data = taskList,
                     Success = true,
                 };
@@ -203,31 +209,54 @@ namespace TaskPro_back.Repository
             }
         }
 
-        public async Task<ResponseDTO<Models.Task>> GetByID(Guid id, Guid userID)
+        public async Task<ResponseDTO<TaskDetailDTO>> GetByID(Guid id, Guid userID)
         {
             try
             {
                 using var context = _context;
 
-                if (await _context.UsersInTasks.AnyAsync( d => d.TaskId.Equals(id) && d.UserId.Equals(userID)))
+                if (await context.UsersInTasks.AnyAsync(d => d.TaskId.Equals(id) && d.UserId.Equals(userID)))
                 {
-                    Models.Task task = await _context.Tasks.FindAsync(id);
+                    Models.Task task = await context.Tasks.FindAsync(id);
 
-                    return new ResponseDTO<Models.Task>
+                    List<UserDTO> list = await (from users in context.Users.AsNoTracking()
+                                                join users_in_task in context.UsersInTasks.AsNoTracking()
+                                                on users.id equals users_in_task.UserId
+                                                where users_in_task.TaskId.Equals(id)
+                                                select new UserDTO
+                                                {
+                                                    Name = users.UserName,
+                                                    Email = users.Email,
+                                                    Id = users.id,
+                                                    Role = users_in_task.Role
+                                                }).ToListAsync();
+
+                    TaskDetailDTO taskDetailDTO = new TaskDetailDTO
                     {
-                        Data = task,
+                        CreatedAt = task.CreatedAt,
+                        Description = task.Description,
+                        id = task.id,
+                        IsCompleted = task.IsCompleted,
+                        Title = task.Title,
+                        UpdatedAt = task.UpdatedAt,
+                        Users = list,
+                    };
+
+                    return new ResponseDTO<TaskDetailDTO>
+                    {
+                        Data = taskDetailDTO,
                         Success = true
                     };
                 }
                 else
                 {
-                    throw new Exception("No existe tarea o no participas de ella.");
+                    throw new Exception("No existe esta tarea o no participas de ella.");
                 }
-                
+
             }
             catch (Exception ex)
             {
-                return new ResponseDTO<Models.Task>
+                return new ResponseDTO<TaskDetailDTO>
                 {
                     Data = null,
                     Success = false,
@@ -275,7 +304,8 @@ namespace TaskPro_back.Repository
             }
             catch (Exception ex)
             {
-                return new ResponseDTO<bool> {
+                return new ResponseDTO<bool>
+                {
                     Data = true,
                     Success = false,
                     ErrorMesage = ex.Message
@@ -289,10 +319,10 @@ namespace TaskPro_back.Repository
             {
                 using var context = _context;
 
-                if (await context.UsersInTasks.AnyAsync( d => d.TaskId.Equals(taskId) && d.UserId.Equals(ownerId) && d.Role.Equals(Enums.Roles.OWNER)))
+                if (await context.UsersInTasks.AnyAsync(d => d.TaskId.Equals(taskId) && d.UserId.Equals(ownerId) && d.Role.Equals(Enums.Roles.OWNER)))
                 {
 
-                    await context.UsersInTasks.Where( d => d.TaskId.Equals(taskId) && d.UserId.Equals(addUserInTaskDTO.UserId))
+                    await context.UsersInTasks.Where(d => d.TaskId.Equals(taskId) && d.UserId.Equals(addUserInTaskDTO.UserId))
                         .ExecuteDeleteAsync();
 
                     return new ResponseDTO<bool>
@@ -305,7 +335,7 @@ namespace TaskPro_back.Repository
                 {
                     throw new Exception("No existe esta tarea o no eres el propietario.");
                 }
-                
+
             }
             catch (Exception ex)
             {
