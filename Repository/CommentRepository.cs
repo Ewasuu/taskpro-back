@@ -17,7 +17,7 @@ namespace TaskPro_back.Repository
 
         public CommentRepository(IOptions<CommentDatabaseConfiguration> commentConfiguration)
         {
-            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+
             var mongoClient = new MongoClient(commentConfiguration.Value.ConnectionString);
 
             var taskPro = mongoClient.GetDatabase(commentConfiguration.Value.DatabaseName);
@@ -80,7 +80,7 @@ namespace TaskPro_back.Repository
         {
             try
             {
-                var filter = Builders<Comment>.Filter.Eq(comment => comment.Id, taskId);
+                var filter = Builders<Comment>.Filter.Eq(comment => comment.TaskId, taskId);
                 IEnumerable<Comment> commentList = await _commentsCollection.Find(filter).ToListAsync();
 
                 return new ResponseDTO<IEnumerable<Comment>>
