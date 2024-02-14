@@ -56,11 +56,11 @@ namespace TaskPro_back.Repository
             try
             {
                 var filter = Builders<Comment>.Filter.Eq(comment => comment.Id, id);
-                await _commentsCollection.FindOneAndDeleteAsync<Comment>(filter);
+                var comment = await _commentsCollection.FindOneAndDeleteAsync<Comment>(filter);
 
                 return new ResponseDTO<Comment>
                 {
-                    Data = null,
+                    Data = comment,
                     Success = true,
 
                 };
