@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using TaskPro_back.Entities;
 using TaskPro_back.IRepository;
@@ -15,11 +17,13 @@ namespace TaskPro_back.Repository
 
         public CommentRepository(IOptions<CommentDatabaseConfiguration> commentConfiguration)
         {
+            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
             var mongoClient = new MongoClient(commentConfiguration.Value.ConnectionString);
 
             var taskPro = mongoClient.GetDatabase(commentConfiguration.Value.DatabaseName);
 
             _commentsCollection = taskPro.GetCollection<Comment>(commentConfiguration.Value.CommentCollectionName);
+
         }
 
 
@@ -52,7 +56,7 @@ namespace TaskPro_back.Repository
             try
             {
                 var filter = Builders<Comment>.Filter.Eq(comment => comment.Id, id);
-                await _commentsCollection.DeleteOneAsync(filter);
+                await _commentsCollection.FindOneAndDeleteAsync<Comment>(filter);
 
                 return new ResponseDTO<Comment>
                 {
@@ -77,9 +81,7 @@ namespace TaskPro_back.Repository
             try
             {
                 var filter = Builders<Comment>.Filter.Eq(comment => comment.Id, taskId);
-                IEnumerable<Comment> commentList = await _commentsCollection.Find(Builders<Comment>.Filter.Empty).ToListAsync();
-                //IEnumerable<Comment> commentList = await _commentsCollection.Find(Builders<Comment>.Filter.Empty).ToListAsync();
-                //commentList = commentList.Where(x => x.TaskId.Equals(taskId)).ToList();
+                IEnumerable<Comment> commentList = await _commentsCollection.Find(filter).ToListAsync();
 
                 return new ResponseDTO<IEnumerable<Comment>>
                 {
