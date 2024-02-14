@@ -102,9 +102,31 @@ namespace TaskPro_back.Repository
             }
         }
 
-        public Task<ResponseDTO<Comment>> Update(Guid id)
+        public async Task<ResponseDTO<Comment>> Update(Comment comment, Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var filter = Builders<Comment>.Filter.Eq(comment => comment.Id, id);
+                var update = Builders<Comment>.Update.Set("Text", comment.Text);
+                await _commentsCollection.UpdateOneAsync(filter, update);
+
+                return new ResponseDTO<Comment>
+                {
+
+                    Data = null,
+                    Success = true,
+                };
+            }
+            catch (System.Exception ex)
+            {
+
+                return new ResponseDTO<Comment>
+                {
+                    Data = null,
+                    ErrorMesage = ex.Message,
+                    Success = false,
+                };
+            }
         }
     }
 }

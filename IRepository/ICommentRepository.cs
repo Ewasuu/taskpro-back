@@ -7,7 +7,7 @@ namespace TaskPro_back.IRepository
     {
         public Task<ResponseDTO<Comment>> Create(Comment comment);
         public Task<ResponseDTO<IEnumerable<Comment>>> Get(Guid taskId);
-        public Task<ResponseDTO<Comment>> Update(Guid id );
-        public Task<ResponseDTO<Comment>> Delete(Guid id );
+        public Task<ResponseDTO<Comment>> Update(Comment comment, Guid id);
+        public Task<ResponseDTO<Comment>> Delete(Guid id);
     }
 }

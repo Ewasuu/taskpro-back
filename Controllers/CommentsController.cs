@@ -40,6 +40,18 @@ namespace TaskPro_back.Controllers
                 return BadRequest(response);
         }
 
+        [HttpPut("{commentId}")]
+        public async Task<IActionResult> Update([FromBody] Comment comment, Guid commentId)
+        {
+
+            ResponseDTO<Comment> response = await _repository.Update(comment, commentId);
+
+            if (response.Success)
+                return Ok(response);
+            else
+                return BadRequest(response);
+        }
+
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> Delete(Guid commentId)
         {
