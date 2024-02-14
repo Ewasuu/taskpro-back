@@ -39,5 +39,16 @@ namespace TaskPro_back.Controllers
             else
                 return BadRequest(response);
         }
+
+        [HttpDelete("{commentId}")]
+        public async Task<IActionResult> Delete(Guid commentId)
+        {
+            ResponseDTO<Comment> response = await _repository.Delete(commentId);
+
+            if (response.Success)
+                return Ok(response);
+            else
+                return BadRequest(response);
+        }
     }
 }

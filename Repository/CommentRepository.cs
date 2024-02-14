@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using TaskPro_back.Entities;
 using TaskPro_back.IRepository;
@@ -46,18 +47,39 @@ namespace TaskPro_back.Repository
             }
         }
 
-        public Task<ResponseDTO<Comment>> Delete(Guid id)
+        public async Task<ResponseDTO<Comment>> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var filter = Builders<Comment>.Filter.Eq(comment => comment.Id, id);
+                await _commentsCollection.DeleteOneAsync(filter);
+
+                return new ResponseDTO<Comment>
+                {
+                    Data = null,
+                    Success = true,
+
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO<Comment>
+                {
+                    Data = null,
+                    Success = true,
+                    ErrorMesage = ex.Message
+                };
+            }
         }
 
         public async Task<ResponseDTO<IEnumerable<Comment>>> Get(Guid taskId)
         {
             try
             {
-
+                var filter = Builders<Comment>.Filter.Eq(comment => comment.Id, taskId);
                 IEnumerable<Comment> commentList = await _commentsCollection.Find(Builders<Comment>.Filter.Empty).ToListAsync();
-                commentList = commentList.Where(x => x.TaskId.Equals(taskId)).ToList();
+                //IEnumerable<Comment> commentList = await _commentsCollection.Find(Builders<Comment>.Filter.Empty).ToListAsync();
+                //commentList = commentList.Where(x => x.TaskId.Equals(taskId)).ToList();
 
                 return new ResponseDTO<IEnumerable<Comment>>
                 {
